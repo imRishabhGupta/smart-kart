@@ -1,0 +1,102 @@
+{
+  "contract_name": "Transaction",
+  "abi": [
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "killContract",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "confirmReceived",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "confirmPurchase",
+      "outputs": [],
+      "payable": true,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "refundBuyer",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "payable": true,
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [],
+      "name": "purchaseConfirmed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [],
+      "name": "receiveConfirmed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [],
+      "name": "refundConfirmed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [],
+      "name": "itemShipped",
+      "type": "event"
+    }
+  ],
+  "unlinked_binary": "0x60606040525b60008054600160a060020a03191633600160a060020a0316179055346002555b5b61040c806100356000396000f300606060405263ffffffff7c01000000000000000000000000000000000000000000000000000000006000350416631c02708d811461005e57806373fac6f014610073578063d696069714610088578063e8a61cc814610092575b600080fd5b341561006957600080fd5b6100716100a7565b005b341561007e57600080fd5b610071610107565b005b61007161020b565b005b341561009d57600080fd5b6100716102de565b005b6000543390600160a060020a038083169116146100c357600080fd5b60035460009060ff1660028111156100d757fe5b8160028111156100e357fe5b146100ed57600080fd5b600054600160a060020a0316ff5b02179055505b5b505b50565b60035460019060ff16600281111561011b57fe5b81600281111561012757fe5b1461013157600080fd5b6001543390600160a060020a0380831691161461014d57600080fd5b7f10000a8aed74d2183c9bc6cb736f5f8798784a325a293b0efbaeeae58becbd9f60405160405180910390a1600154600254600160a060020a039091169080156108fc0290604051600060405180830381858888f1935050505015156101b257600080fd5b600054600160a060020a039081169030163180156108fc0290604051600060405180830381858888f1935050505015156101eb57600080fd5b600380546002919060ff19166001836100fb565b02179055505b5b505b50565b60028054349102811461021d57600080fd5b60035460009060ff16600281111561023157fe5b81600281111561023d57fe5b1461024757600080fd5b6001805473ffffffffffffffffffffffffffffffffffffffff191633600160a060020a03161781556003805460ff191682805b02179055507f764326667cab2f2f13cad5f7b7665c704653bd1acc250dcb7b422bce726896b460405160405180910390a17f3d534ad0cdeff36d212351ce6d42e76dbabac473b61b4f1070dd6c04b32e612060405160405180910390a15b5b505b50565b60035460019060ff1660028111156102f257fe5b8160028111156102fe57fe5b1461030857600080fd5b6000543390600160a060020a0380831691161461032457600080fd5b60015460028054600160a060020a03909216910280156108fc0290604051600060405180830381858888f19350505050151561035f57600080fd5b600054600160a060020a039081169030163180156108fc0290604051600060405180830381858888f19350505050151561039857600080fd5b600380546002919060ff19166001835b02179055507f456ba1841a576de66e18e5f7c362d5839413eddc36eace5f2870e3e1f4b8679860405160405180910390a15b5b505b505600a165627a7a723058207144c48e6854333878c35d1c6f850af9914e33264302d97ae44c21585df7364a0029",
+  "networks": {
+    "1508921005241": {
+      "events": {
+        "0x764326667cab2f2f13cad5f7b7665c704653bd1acc250dcb7b422bce726896b4": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "purchaseConfirmed",
+          "type": "event"
+        },
+        "0x10000a8aed74d2183c9bc6cb736f5f8798784a325a293b0efbaeeae58becbd9f": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "receiveConfirmed",
+          "type": "event"
+        },
+        "0x456ba1841a576de66e18e5f7c362d5839413eddc36eace5f2870e3e1f4b86798": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "refundConfirmed",
+          "type": "event"
+        },
+        "0x3d534ad0cdeff36d212351ce6d42e76dbabac473b61b4f1070dd6c04b32e6120": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "itemShipped",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0xc6d06f151942b6ae3ae28306e22997bb3aad8f06",
+      "updated_at": 1508921455118
+    }
+  },
+  "schema_version": "0.0.5",
+  "updated_at": 1509274962512
+}

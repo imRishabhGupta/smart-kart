@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head> 
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<!-- Website CSS style -->
+		<link href="/stylesheets/style.css" rel="stylesheet">
+
+		<!-- Website Font style -->
+	    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+	    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		
+    	<script src="/javascripts/seller.js" charset="utf-8"></script>
+  		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  		<script type="text/javascript" src="/javascripts/web3.js"></script>
+  		<script type="text/javascript" src="/javascripts/ipfs.js"></script>
+		<title>Seller Page</title>
+	</head>
+	<body>
+		<nav class="navbar navbar-inverse">
+			<div class="container-fluid">
+	    		<div class="navbar-header">
+	      			<a class="navbar-brand" href="#">SmartCart</a>
+		    	</div>
+			    <p class="navbar-text navbar-right navbar-link" id="eth-amount">ETH</p>
+	  		</div>
+		</nav>
+		<div class="container">
+			<div class="row main">
+				<div class="main-login main-center">
+				<h5>Enter the product details</h5>
+					<form class="" method="post" action="#">
+						
+						<div class="form-group">
+							<label for="name" class="cols-sm-2 control-label">Product Name</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-user fa" aria-hidden="true"></i></span>
+									<input type="text" class="form-control" name="name" id="name"  placeholder="Enter the Product Name"/>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="productdescription" class="cols-sm-2 control-label">Product Description</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-users fa" aria-hidden="true"></i></span>
+									<input type="text" class="form-control input-lg" name="productdescription" id="productdescription" placeholder="Enter Description"/>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="password" class="cols-sm-2 control-label">Price</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
+									<input type="text" class="form-control" name="price" id="price"  placeholder="Enter your Price"/>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="control-label" class="cols-sm-2 control-label">Product Image</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
+									<input class="filestyle" data-icon="false" type="file">
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group ">
+							<a href="http://abc.com" target="_blank" type="button" id="button" class="btn btn-primary btn-lg btn-block login-button">Submit Product</a>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
