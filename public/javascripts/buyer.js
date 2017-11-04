@@ -88,7 +88,7 @@ window.onload = function() {
                 productList += '</button>';
                 productList += '</span>';
 
-                if(this.status == 'confirmed'){ // Refund option button
+                if(this.status == 'confirmed'){ // Refund option button // TO DO: Change to Confirmed
                   productList += '<span>';
                   productList += '<button type="button" class="btn btn-danger btn-lg" rel="'+this._id+'"';
                   buttonString = 'Return Item';
@@ -115,12 +115,45 @@ window.onload = function() {
 
 function confirmPurchase(event) {
   console.log($(this).attr('rel')); //Put call here
+  var URL = '/products/updatestatus';
+  var dataObject = {_id:$(this).attr('rel'), status:'confirmed'}; //TO DO: Change to Confirmed
+  $.ajax({
+    url: URL,
+    type: 'PUT',    
+    data: JSON.stringify(dataObject),
+    contentType: 'application/json',
+    success: function(result) {
+        alert("success");
+    }
+  });
 }
 
 function confirmReceipt(event) {
   console.log($(this).attr('rel')); //Put call here
+  var URL = '/products/updatestatus';
+  var dataObject = {_id:$(this).attr('rel'), status:'Disabled'};
+  $.ajax({
+    url: URL,
+    type: 'PUT',    
+    data: JSON.stringify(dataObject),
+    contentType: 'application/json',
+    success: function(result) {
+        alert("success");
+    }
+  });
 }
 
 function refundItem(event) { // Put call here
   console.log($(this).attr('rel'));
+  var URL = '/products/updatestatus';
+  var dataObject = {_id:$(this).attr('rel'), status:'Created'};
+  $.ajax({
+    url: URL,
+    type: 'PUT',
+    data: JSON.stringify(dataObject),
+    contentType: 'json',
+    success: function(result) {
+        alert("success");
+    }
+  });
 }
