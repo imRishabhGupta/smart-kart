@@ -2,10 +2,7 @@ var accounts;
 var account;
 var currentData;
 
-
 window.onload = function() {
-
-
 
 	if (typeof web3 !== 'undefined') {
     console.warn("Using web3 detected from external source like Metamask")
@@ -35,10 +32,8 @@ window.onload = function() {
 
     });
 
-  
-
   var productList = '';
-  var url = 'http://localhost:3000/products/productlist';
+  var url = '/products/productlist';
   $.getJSON(url, function(data){
     currentData = data;
     $.each(data, function(){
@@ -69,18 +64,22 @@ window.onload = function() {
           productList += '</span>';
 
           productList += '<span>';
-          productList += '<button type="button" class="btn btn-default btn-lg" id="'+this._id+'">';
-          if(this.status == 'confirmed')
-            productList += 'Click here if you have received the item';
+          productList += '<button type="button" class="btn btn-default btn-lg" rel="'+this._id+'"';
+          var buttonString;
+          if(this.status == 'confirmed') //TO DO: Change it to Confirmed after correcting local database.
+            buttonString = 'Click here if you have received the item';
           else if(this.status == 'Created'){
-            productList += 'Buy Now';
+            buttonString = 'Buy Now';
           }
           else if(this.status == 'Disabled'){
-            productList += 'Sold Out';
+            buttonString = 'Sold Out';
+            productList += ' disabled';
           }
           else{
-            alert("There is an error rishab's code");
+            productList += ' disabled';
+            buttonString = 'NA';
           }
+          productList += '>' + buttonString;
           productList += '</button>';
           productList += '</span>';
           productList += '</span>';
@@ -89,7 +88,14 @@ window.onload = function() {
           productList += '</div>';
           //productlist += '</li>';
     });
-    $('#productList').html(productList);   
+    $('#productList').html(productList);
   });
-  
+
+  $('#productList').on('click', "div button.btn", buy);
 };
+
+function buy(event) {
+  console.log($(this).attr('rel'));
+}
+
+
