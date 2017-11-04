@@ -1,9 +1,11 @@
 var accounts;
 var account;
-
+var currentData;
 
 
 window.onload = function() {
+
+
 
 	if (typeof web3 !== 'undefined') {
     console.warn("Using web3 detected from external source like Metamask")
@@ -32,65 +34,62 @@ window.onload = function() {
     account = accounts[0];
 
     });
-    var productList = '';
-    var url = 'http://localhost:3000/products/productlist';
-    $.getJSON(url, function(data){
-      productList += '<ul>';
-      $.each(data, function(){  
-            productList += '<li id="'this._id+'">';
-            productList += '<div class="panel panel-primary">';
-            productList += '<div class="panel-heading">';
-            productList += '<h3 class="panel-title"><strong>'+this.name+'</strong></h3>';
-            productList += '</div>';
 
-            productList += '<div class="panel-body">';
-            productList += '<span class="item">';
-            productList += '<span class="item-img">';
-            productList += '<img src="'+this.image+'">';
-            productList += '</span>';
-            
-            productList += '<span class="seller-address">';
-            productList += '<p><strong>Seller Address: </strong>'+this.sellerAddress+'</p>';
-            productList += '</span>';
-            
-            productList += '<span class="contract-address">';
-            productList += '<p><strong>Contract Address: </strong>'+this.contractAddress+'</p>';
-            productList += '</span>';
-        
-            productList += '<span class="item-description">';
-            productList += '<p>'+this.description+'</p>';
-            productList += '<p><strong>'+this.price+'</strong></p>';
-            productList += '</span>';
-            
-            productList += '<span class="item-status">';
-            productList += '<p><strong>Status: </strong>'+this.status+'</p>';
-            productList += '</span>';
-        
+  
 
-            productList += '<span>';
-            productList += '<button type="button" class="btn btn-default btn-lg">';
-            if(this.status == 'confirmed')
-              productList += 'Click here if you have received the item';
-            else if(this.status == 'Created'){
-              productList += 'Buy Now';
-            }
-            else if(this.status == 'Disabled'){
-              productList += 'Sold Out';
-            }
-            else{
-              alert("There is an error rishab's code");
-            }
-            productList += '</button>';
-            productList += '</span>';
-            productList += '</span>';
+  var productList = '';
+  var url = 'http://localhost:3000/products/productlist';
+  $.getJSON(url, function(data){
+    currentData = data;
+    $.each(data, function(){
+
+          //productList += '<li id="sda">';
+          productList += '<div class="panel panel-primary">';
+          productList += '<div class="panel-heading">';
+          productList += '<h3 class="panel-title"><strong>'+this.name+'</strong></h3>';
+          productList += '</div>';
+
+          productList += '<div class="panel-body">';
+          productList += '<span class="item">';
+          productList += '<span class="item-img">';
+          productList += '<img src="'+this.image+'">';
+          productList += '</span>';
           
-            productList += '</div>';
-            productList += '</div>';
-            productlist += '</li>';
-      });
-      productList += '</ul>';
-      $('#productList').html(productList)
+          productList += '<span class="seller-address">';
+          productList += '<p><strong>Seller Address: </strong>'+this.sellerAddress+'</p>';
+          productList += '</span>';
+          
+          productList += '<span class="contract-address">';
+          productList += '<p><strong>Contract Address: </strong>'+this.contractAddress+'</p>';
+          productList += '</span>';
+      
+          productList += '<span class="item-description">';
+          productList += '<p><strong>Description:</strong>'+this.description+'</p>';
+          productList += '<p><strong>Price:</strong>'+this.price+'</p>';
+          productList += '</span>';
+
+          productList += '<span>';
+          productList += '<button type="button" class="btn btn-default btn-lg" id="'+this._id+'">';
+          if(this.status == 'confirmed')
+            productList += 'Click here if you have received the item';
+          else if(this.status == 'Created'){
+            productList += 'Buy Now';
+          }
+          else if(this.status == 'Disabled'){
+            productList += 'Sold Out';
+          }
+          else{
+            alert("There is an error rishab's code");
+          }
+          productList += '</button>';
+          productList += '</span>';
+          productList += '</span>';
+        
+          productList += '</div>';
+          productList += '</div>';
+          //productlist += '</li>';
     });
-
-
+    $('#productList').html(productList);   
+  });
+  
 };
