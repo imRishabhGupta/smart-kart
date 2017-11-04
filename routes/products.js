@@ -34,8 +34,7 @@ router.post('/updatestatus', function(req, res) {
     var ObjectID = req.ObjectID;
     var collection = db.get('customers');
     var query = { _id: new ObjectID(req.body) };  //TODO: parse what you get from body
-    var newvalues = { $set: { status: "Refunded" } };
-    
+    var newvalues = { $set: { status: "Refunded" } }; // TODO: Change status as sent from front end    
     collection.update(query, newvalues, function(err, result) {
         res.send(
             (err === null) ? { msg: '' } : { msg: err }

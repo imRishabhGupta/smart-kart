@@ -30,7 +30,7 @@ window.onload = function() {
     accounts = accs;
     account = accounts[0];
 
-    });
+  });
 
   var productList = '';
   var url = '/products/productlist';
@@ -146,7 +146,7 @@ function confirmReceipt(event) {
 function refundItem(event) { // Put call here
   console.log($(this).attr('rel'));
   var URL = '/products/updatestatus';
-  var dataObject = {_id:$(this).attr('rel'), status:'Created'};
+  var dataObject = {_id:$(this).attr('rel'), status:'Disabled'};
   $.ajax({
     url: URL,
     type: 'PUT',
