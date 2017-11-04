@@ -5,7 +5,7 @@
   "description": "SmartKart is a P2P marketplace with no trusted 3rd parties involved in between the transaction. With the help of the Ethereum blockchain, a smart contract between the buyer and seller is signed by both the parties to establish a two party trustless escrow.",
   "license": "MIT",
   "scripts": {
-    "start": "node ./bin/www",
+    "start": "node ./bin/www"
   },
   "dependencies": {
     "body-parser": "~1.18.2",
