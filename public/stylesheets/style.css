@@ -126,8 +126,14 @@ span.input-group-addon i {
 .panel,.panel-primary{
     width: 75%;
     margin: auto;
+
 }
 
-.btn,.btn-default,.btn-lg{
+.btn.btn-lg{
     float: right;
+    margin: 2px;
+}
+
+.panel.panel-primary{
+    margin-bottom:10px;
 }

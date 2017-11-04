@@ -40,62 +40,80 @@ window.onload = function() {
 
           //productList += '<li id="sda">';
           productList += '<div class="panel panel-primary">';
-          productList += '<div class="panel-heading">';
-          productList += '<h3 class="panel-title"><strong>'+this.name+'</strong></h3>';
-          productList += '</div>';
+            productList += '<div class="panel-heading">';
+              productList += '<h3 class="panel-title"><strong>'+this.name+'</strong></h3>';
+            productList += '</div>';
 
-          productList += '<div class="panel-body">';
-          productList += '<span class="item">';
-          productList += '<span class="item-img">';
-          productList += '<img src="'+this.image+'">';
-          productList += '</span>';
+            productList += '<div class="panel-body">';
+              productList += '<span class="item">';
+                productList += '<span class="item-img">';
+                productList += '<img src="'+this.image+'">';
+                productList += '</span>';
           
-          productList += '<span class="seller-address">';
-          productList += '<p><strong>Seller Address: </strong>'+this.sellerAddress+'</p>';
-          productList += '</span>';
+                productList += '<span class="seller-address">';
+                productList += '<p><strong>Seller Address: </strong>'+this.sellerAddress+'</p>';
+                productList += '</span>';
           
-          productList += '<span class="contract-address">';
-          productList += '<p><strong>Contract Address: </strong>'+this.contractAddress+'</p>';
-          productList += '</span>';
+                productList += '<span class="contract-address">';
+                productList += '<p><strong>Contract Address: </strong>'+this.contractAddress+'</p>';
+                productList += '</span>';
       
-          productList += '<span class="item-description">';
-          productList += '<p><strong>Description:</strong>'+this.description+'</p>';
-          productList += '<p><strong>Price:</strong>'+this.price+'</p>';
-          productList += '</span>';
+                productList += '<span class="item-description">';
+                productList += '<p><strong>Description:</strong>'+this.description+'</p>';
+                productList += '<p><strong>Price:</strong>'+this.price+'</p>';
+                productList += '</span>';
 
-          productList += '<span>';
-          productList += '<button type="button" class="btn btn-default btn-lg" rel="'+this._id+'"';
-          var buttonString;
-          if(this.status == 'confirmed') //TO DO: Change it to Confirmed after correcting local database.
-            buttonString = 'Click here if you have received the item';
-          else if(this.status == 'Created'){
-            buttonString = 'Buy Now';
-          }
-          else if(this.status == 'Disabled'){
-            buttonString = 'Sold Out';
-            productList += ' disabled';
-          }
-          else{
-            productList += ' disabled';
-            buttonString = 'NA';
-          }
-          productList += '>' + buttonString;
-          productList += '</button>';
-          productList += '</span>';
-          productList += '</span>';
+                productList += '<span>';
+                productList += '<button type="button" class="btn btn-default btn-lg" rel="'+this._id+'"';
+                var buttonString;
+                if(this.status == 'confirmed') //TO DO: Change it to Confirmed after correcting local database.
+                  buttonString = 'Keep Item';
+                else if(this.status == 'Created'){
+                  buttonString = 'Buy Now';
+                }
+                else if(this.status == 'Disabled'){
+                  buttonString = 'Sold Out';
+                  productList += ' disabled';
+                }
+                else{
+                  productList += ' disabled';
+                  buttonString = 'NA';
+                }
+                productList += '>' + buttonString;
+                productList += '</button>';
+                productList += '</span>';
+
+                if(this.status == 'confirmed'){ // Refund option button
+                  productList += '<span>';
+                  productList += '<button type="button" class="btn btn-danger btn-lg" rel="'+this._id+'"';
+                  buttonString = 'Return Item';
+                
+                  productList += '>' + buttonString;
+                  productList += '</button>';
+                  productList += '</span>';
+                }
+
+              productList += '</span>';
         
+            productList += '</div>';
           productList += '</div>';
-          productList += '</div>';
+
           //productlist += '</li>';
     });
     $('#productList').html(productList);
   });
-
-  $('#productList').on('click', "div button.btn", buy);
+  $('#productList').on('click', "div button.btn.btn-default", confirmPurchase);
+  $('#productList').on('click', "div button.btn.btn-danger", refundItem);
 };
 
-function buy(event) {
-  console.log($(this).attr('rel'));
+function confirmPurchase(event) {
+  console.log($(this).attr('rel')); //Put call here
 }
 
+function confirmReceipt(event) {
+  console.log($(this).attr('rel')); //Put call here
+}
 
+function refundItem(event) { // Put call here
+  console.log($(this).attr('rel'));
+}
