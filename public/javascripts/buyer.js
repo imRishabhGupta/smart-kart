@@ -35,14 +35,14 @@ window.onload = function() {
     var productList = '';
     var url = 'http://localhost:3000/products/productlist';
     $.getJSON(url, function(data){
-      productList += '<li>';
+      productList += '<ul>';
       $.each(data, function(){  
-            productList += '<ul>';
+            productList += '<li id="'this._id+'">';
             productList += '<div class="panel panel-primary">';
             productList += '<div class="panel-heading">';
             productList += '<h3 class="panel-title"><strong>'+this.name+'</strong></h3>';
-            
             productList += '</div>';
+
             productList += '<div class="panel-body">';
             productList += '<span class="item">';
             productList += '<span class="item-img">';
@@ -56,19 +56,24 @@ window.onload = function() {
             productList += '<span class="contract-address">';
             productList += '<p><strong>Contract Address: </strong>'+this.contractAddress+'</p>';
             productList += '</span>';
-            
-
+        
             productList += '<span class="item-description">';
             productList += '<p>'+this.description+'</p>';
             productList += '<p><strong>'+this.price+'</strong></p>';
             productList += '</span>';
+            
+            productList += '<span class="item-status">';
+            productList += '<p><strong>Status: </strong>'+this.status+'</p>';
+            productList += '</span>';
+        
+
             productList += '<span>';
             productList += '<button type="button" class="btn btn-default btn-lg">';
             if(this.status == 'confirmed')
-              productList += 'Confirmed';
+              productList += 'Click here if you have received the item';
             else if(this.status == 'Created'){
               productList += 'Buy Now';
-            }           
+            }
             else if(this.status == 'Disabled'){
               productList += 'Sold Out';
             }
@@ -81,8 +86,11 @@ window.onload = function() {
           
             productList += '</div>';
             productList += '</div>';
-          productList += '</ul>';
+            productlist += '</li>';
       });
+      productList += '</ul>';
       $('#productList').html(productList)
     });
+
+
 };
