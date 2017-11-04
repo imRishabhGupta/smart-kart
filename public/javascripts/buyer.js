@@ -64,18 +64,23 @@ window.onload = function() {
                 productList += '</span>';
 
                 productList += '<span>';
-                productList += '<button type="button" class="btn btn-default btn-lg" rel="'+this._id+'"';
+                //productList += '<button type="button" class="btn btn-default btn-lg" rel="'+this._id+'"';
                 var buttonString;
-                if(this.status == 'confirmed') //TO DO: Change it to Confirmed after correcting local database.
+                if(this.status == 'confirmed'){ //TO DO: Change it to Confirmed after correcting local database.
+                  productList += '<button type="button" class="btn btn-success btn-lg" rel="'+this._id+'"';
                   buttonString = 'Keep Item';
+                }
                 else if(this.status == 'Created'){
+                  productList += '<button type="button" class="btn btn-default btn-lg" rel="'+this._id+'"';
                   buttonString = 'Buy Now';
                 }
                 else if(this.status == 'Disabled'){
+                  productList += '<button type="button" class="btn btn-default btn-lg" rel="'+this._id+'"';
                   buttonString = 'Sold Out';
                   productList += ' disabled';
                 }
                 else{
+                  productList += '<button type="button" class="btn btn-default btn-lg" rel="'+this._id+'"';
                   productList += ' disabled';
                   buttonString = 'NA';
                 }
@@ -102,8 +107,10 @@ window.onload = function() {
     });
     $('#productList').html(productList);
   });
-  $('#productList').on('click', "div button.btn.btn-default", confirmPurchase);
+  $('#productList').on('click', "div button.btn.btn-default", confirmReceipt);
   $('#productList').on('click', "div button.btn.btn-danger", refundItem);
+  $('#productList').on('click', "div button.btn.btn-success", confirmPurchase);
+  
 };
 
 function confirmPurchase(event) {
