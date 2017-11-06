@@ -121,8 +121,8 @@ function confirmPurchase(event) {
   
   $.getJSON(URL, function(data){
     productData = data;
-    contractAddress = this.contractAddress;
-    price = this.price;
+    contractAddress = data.contractAddress;
+    price = data.price;
   });
   // Make changes to contract by sending money to contract.  
   if(web3.eth.getBalance(bAddress) >= 2*price){
@@ -151,8 +151,13 @@ function confirmPurchase(event) {
 
 function confirmReceipt(event) {
   var bAddress = accounts[2];
-  contractAddress.confirmReceived({from: bAdress}).then(function(){
-    var URL = '/products/updatestatus';
+  var cAddress;
+  var URL = '/products/getproduct/'+$(this).attr('rel');
+  $.getJSON(URL, function(data){
+    cAddress = data.contractAddress;
+  });
+  cAddress.confirmReceived({from: bAdress}).then(function(){
+    URL = '/products/updatestatus';
     var dataObject = {_id:$(this).attr('rel'), status:'Disabled'};
     $.ajax({
       url: URL,
@@ -169,8 +174,13 @@ function confirmReceipt(event) {
 
 function refundItem(event) {
   var bAdress = accounts[2];
-  contractAddress.refundBuyer({from: bAddress}).then(function(){
-    var URL = '/products/updatestatus';
+  var cAddress;
+  var URL = '/products/getproduct/'+$(this).attr('rel');
+  $.getJSON(URL, function(data){
+    cAddress = data.contractAddress;
+  });
+  cAddress.refundBuyer({from: bAddress}).then(function(data){
+    URL = '/products/updatestatus';
     var dataObject = {_id:$(this).attr('rel'), status:'Disabled'};
     $.ajax({
       url: URL,
