@@ -14,6 +14,19 @@ router.get('/productlist', function(req, res) {
 });
 
 /*
+ * GET product from id.
+ */
+router.get('/getproduct/:id', function(req, res) {
+    var db = req.db;
+    var collection = db.get('customers');
+    var ObjectID = req.ObjectID;
+    var query = { _id: new ObjectID(req.params.id) };
+    collection.find(query, function(e,docs){
+        res.json(docs);
+    });
+});
+
+/*
  * POST to addproduct.
  */
 router.post('/addproduct', function(req, res) {
@@ -21,23 +34,26 @@ router.post('/addproduct', function(req, res) {
     var collection = db.get('customers');
     collection.insert(req.body, function(err, result){
         res.send(
-            (err === null) ? { msg: '' } : { msg: err }
+            (err === null) ? { 
+                msg: 'Product added successfully.',
+                result: true
+             } : { msg: err }
         );
     });
 });
 
 /*
- * POST to updatestatus.
+ * PUT to updatestatus.
  */
-router.post('/updatestatus', function(req, res) {
+router.put('/updatestatus', function(req, res) {
     var db = req.db;
     var ObjectID = req.ObjectID;
     var collection = db.get('customers');
-    var query = { _id: new ObjectID(req.body) };  //TODO: parse what you get from body
-    var newvalues = { $set: { status: "Refunded" } }; // TODO: Change status as sent from front end    
+    var query = { _id: new ObjectID(req.body._id) };
+    var newvalues = { $set: { status: req.body.status } };
     collection.update(query, newvalues, function(err, result) {
         res.send(
-            (err === null) ? { msg: '' } : { msg: err }
+            (err === null) ? { msg: 'Status of product changed successfully.' } : { msg: err }
         );
     });
 });

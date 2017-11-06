@@ -32,13 +32,17 @@ window.onload = function() {
 
   });
 
+  populateList();
+  
+};
+
+function populateList() {
   var productList = '';
   var url = '/products/productlist';
   $.getJSON(url, function(data){
     currentData = data;
     $.each(data, function(){
 
-          //productList += '<li id="sda">';
           productList += '<div class="panel panel-primary">';
             productList += '<div class="panel-heading">';
               productList += '<h3 class="panel-title"><strong>'+this.name+'</strong></h3>';
@@ -64,9 +68,9 @@ window.onload = function() {
                 productList += '</span>';
 
                 productList += '<span>';
-                //productList += '<button type="button" class="btn btn-default btn-lg" rel="'+this._id+'"';
+
                 var buttonString;
-                if(this.status == 'confirmed'){ //TO DO: Change it to Confirmed after correcting local database.
+                if(this.status == 'Confirmed'){
                   productList += '<button type="button" class="btn btn-success btn-lg" rel="'+this._id+'"';
                   buttonString = 'Keep Item';
                 }
@@ -88,7 +92,7 @@ window.onload = function() {
                 productList += '</button>';
                 productList += '</span>';
 
-                if(this.status == 'confirmed'){ // Refund option button // TO DO: Change to Confirmed
+                if(this.status == 'Confirmed'){ // Refund option button // TO DO: Change to Confirmed
                   productList += '<span>';
                   productList += '<button type="button" class="btn btn-danger btn-lg" rel="'+this._id+'"';
                   buttonString = 'Return Item';
@@ -103,57 +107,55 @@ window.onload = function() {
             productList += '</div>';
           productList += '</div>';
 
-          //productlist += '</li>';
     });
     $('#productList').html(productList);
   });
-  $('#productList').on('click', "div button.btn.btn-default", confirmReceipt);
+  $('#productList').on('click', "div button.btn.btn-default", confirmPurchase);
   $('#productList').on('click', "div button.btn.btn-danger", refundItem);
-  $('#productList').on('click', "div button.btn.btn-success", confirmPurchase);
-  
-};
+  $('#productList').on('click', "div button.btn.btn-success", confirmReceipt);
+}
 
 function confirmPurchase(event) {
-  console.log($(this).attr('rel')); //Put call here
   var URL = '/products/updatestatus';
-  var dataObject = {_id:$(this).attr('rel'), status:'confirmed'}; //TO DO: Change to Confirmed
+  var dataObject = {_id:$(this).attr('rel'), status:'Confirmed'}; //TO DO: Change to Confirmed
   $.ajax({
     url: URL,
-    type: 'PUT',    
+    type: 'PUT',
     data: JSON.stringify(dataObject),
     contentType: 'application/json',
     success: function(result) {
-        alert("success");
+        alert("Product bought successfully.");
+        populateList();
     }
   });
 }
 
 function confirmReceipt(event) {
-  console.log($(this).attr('rel')); //Put call here
-  var URL = '/products/updatestatus';
-  var dataObject = {_id:$(this).attr('rel'), status:'Disabled'};
-  $.ajax({
-    url: URL,
-    type: 'PUT',    
-    data: JSON.stringify(dataObject),
-    contentType: 'application/json',
-    success: function(result) {
-        alert("success");
-    }
-  });
-}
-
-function refundItem(event) { // Put call here
-  console.log($(this).attr('rel'));
   var URL = '/products/updatestatus';
   var dataObject = {_id:$(this).attr('rel'), status:'Disabled'};
   $.ajax({
     url: URL,
     type: 'PUT',
     data: JSON.stringify(dataObject),
-    contentType: 'json',
+    contentType: 'application/json',
     success: function(result) {
-        alert("success");
+        alert("Product's receipt is confirmed.");
+        populateList();
+    }
+  });
+}
+
+function refundItem(event) {
+  var URL = '/products/updatestatus';
+  var dataObject = {_id:$(this).attr('rel'), status:'Disabled'};
+  $.ajax({
+    url: URL,
+    type: 'PUT',
+    data: JSON.stringify(dataObject),
+    contentType: 'application/json',
+    success: function(result) {
+        alert("Request to return product is sent.");
+        populateList();
     }
   });
 }
