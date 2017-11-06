@@ -1,10 +1,8 @@
 var accounts;
 var account;
-var currentData;
 
 window.onload = function() {
-
-	if (typeof web3 !== 'undefined') {
+  if (typeof web3 !== 'undefined') {
     console.warn("Using web3 detected from external source like Metamask")
     // Use Mist/MetaMask's provider
     window.web3 = new Web3(web3.currentProvider);
@@ -14,14 +12,12 @@ window.onload = function() {
     window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
   }
 	var self = this;
-
     // Get the initial account balance so it can be displayed.
-  web3.eth.getAccounts(function(err, accs) {  
+  web3.eth.getAccounts(function(err, accs) {
     if (err != null) {
       alert("There was an error fetching your accounts.");
       return;
     }
-
     if (accs.length == 0) {
       alert("Couldn't get any accounts! Make sure your Ethereum client is configured correctly.");
       return;
@@ -40,7 +36,7 @@ function populateList() {
   var productList = '';
   var url = '/products/productlist';
   $.getJSON(url, function(data){
-    currentData = data;
+    //currentData = data;
     $.each(data, function(){
 
           productList += '<div class="panel panel-primary">';
@@ -116,46 +112,75 @@ function populateList() {
 }
 
 function confirmPurchase(event) {
-  var URL = '/products/updatestatus';
-  var dataObject = {_id:$(this).attr('rel'), status:'Confirmed'}; //TO DO: Change to Confirmed
-  $.ajax({
-    url: URL,
-    type: 'PUT',
-    data: JSON.stringify(dataObject),
-    contentType: 'application/json',
-    success: function(result) {
-        alert("Product bought successfully.");
-        populateList();
-    }
+
+  var productData;
+  var contractAddress;
+  var price;
+  var URL = '/products/getproduct/'+$(this).attr('rel');
+  var bAddress = accounts[2];
+  
+  $.getJSON(URL, function(data){
+    productData = data;
+    contractAddress = this.contractAddress;
+    price = this.price;
   });
+  // Make changes to contract by sending money to contract.  
+  if(web3.eth.getBalance(bAddress) >= 2*price){
+    contractAddress.confirmPurchase({from: bAddress, value:2*price}).then(
+      function(){
+        URL = '/products/updatestatus';
+        var dataObject = {_id:$(this).attr('rel'), status:'Confirmed', buyerAdress: bAdress}; //TO DO: Change to Confirmed
+        $.ajax({
+          url: URL,
+          type: 'PUT',
+          data: JSON.stringify(dataObject),
+          contentType: 'application/json',
+          success: function(result) {
+              alert("Product bought successfully.");
+              populateList();
+          }
+        });
+        alert("Purchase Confirmed");
+      });
+  }
+  else{
+    alert("You don't have enough balance!");
+    return;
+  }
 }
 
 function confirmReceipt(event) {
-  var URL = '/products/updatestatus';
-  var dataObject = {_id:$(this).attr('rel'), status:'Disabled'};
-  $.ajax({
-    url: URL,
-    type: 'PUT',
-    data: JSON.stringify(dataObject),
-    contentType: 'application/json',
-    success: function(result) {
-        alert("Product's receipt is confirmed.");
-        populateList();
-    }
+  var bAddress = accounts[2];
+  contractAddress.confirmReceived({from: bAdress}).then(function(){
+    var URL = '/products/updatestatus';
+    var dataObject = {_id:$(this).attr('rel'), status:'Disabled'};
+    $.ajax({
+      url: URL,
+      type: 'PUT',
+      data: JSON.stringify(dataObject),
+      contentType: 'application/json',
+      success: function(result) {
+          alert("Product's receipt is confirmed.");
+          populateList();
+      }
+    });
   });
 }
 
 function refundItem(event) {
-  var URL = '/products/updatestatus';
-  var dataObject = {_id:$(this).attr('rel'), status:'Disabled'};
-  $.ajax({
-    url: URL,
-    type: 'PUT',
-    data: JSON.stringify(dataObject),
-    contentType: 'application/json',
-    success: function(result) {
-        alert("Request to return product is sent.");
-        populateList();
-    }
+  var bAdress = accounts[2];
+  contractAddress.refundBuyer({from: bAddress}).then(function(){
+    var URL = '/products/updatestatus';
+    var dataObject = {_id:$(this).attr('rel'), status:'Disabled'};
+    $.ajax({
+      url: URL,
+      type: 'PUT',
+      data: JSON.stringify(dataObject),
+      contentType: 'application/json',
+      success: function(result) {
+          alert("Request to return product is sent.");
+          populateList();
+      }
+    });
   });
 }
