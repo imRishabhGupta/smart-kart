@@ -114,19 +114,27 @@ function populateList() {
 function confirmPurchase(event) {
 
   var productData;
-  var contractAddress;
+  var contractInstance;
+  var cAddress;
   var price;
   var URL = '/products/getproduct/'+$(this).attr('rel');
   var bAddress = accounts[2];
   
   $.getJSON(URL, function(data){
     productData = data;
-    contractAddress = data.contractAddress;
+    cAddress = data.contractAddress;
     price = data.price;
+  });
+  // Contract Instannce from contract Address
+  var abi, bytecode, Transaction;
+  $.getJSON('Transaction.json', function(data) {
+    abi = data.abi;
+    Transaction = web3.eth.contract(abi);
+    contractInstance  = Transaction.at(cAddress);
   });
   // Make changes to contract by sending money to contract.  
   if(web3.eth.getBalance(bAddress) >= 2*price){
-    contractAddress.confirmPurchase({from: bAddress, value:2*price}).then(
+    contractInstance.confirmPurchase({from: bAddress, value:2*price}).then(
       function(){
         URL = '/products/updatestatus';
         var dataObject = {_id:$(this).attr('rel'), status:'Confirmed', buyerAdress: bAdress}; //TO DO: Change to Confirmed
@@ -151,12 +159,18 @@ function confirmPurchase(event) {
 
 function confirmReceipt(event) {
   var bAddress = accounts[2];
-  var cAddress;
+  var cAddress, contractInstance;
   var URL = '/products/getproduct/'+$(this).attr('rel');
   $.getJSON(URL, function(data){
     cAddress = data.contractAddress;
   });
-  cAddress.confirmReceived({from: bAdress}).then(function(){
+  var abi, bytecode, Transaction;
+  $.getJSON('Transaction.json', function(data) {
+    abi = data.abi;
+    Transaction = web3.eth.contract(abi);
+    contractInstance  = Transaction.at(cAddress);
+  });
+  contractInstance.confirmReceived({from: bAdress}).then(function(){
     URL = '/products/updatestatus';
     var dataObject = {_id:$(this).attr('rel'), status:'Disabled'};
     $.ajax({
@@ -174,12 +188,18 @@ function confirmReceipt(event) {
 
 function refundItem(event) {
   var bAdress = accounts[2];
-  var cAddress;
+  var cAddress, contractInstance;
   var URL = '/products/getproduct/'+$(this).attr('rel');
   $.getJSON(URL, function(data){
     cAddress = data.contractAddress;
   });
-  cAddress.refundBuyer({from: bAddress}).then(function(data){
+  var abi, bytecode, Transaction;
+  $.getJSON('Transaction.json', function(data) {
+    abi = data.abi;
+    Transaction = web3.eth.contract(abi);
+    contractInstance  = Transaction.at(cAddress);
+  });
+  contractInstance.refundBuyer({from: bAddress}).then(function(data){
     URL = '/products/updatestatus';
     var dataObject = {_id:$(this).attr('rel'), status:'Disabled'};
     $.ajax({
