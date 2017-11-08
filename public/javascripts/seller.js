@@ -1,19 +1,9 @@
 var accounts;
 var account;
 var transactionInstance;
-var Transaction;
 var abi, bytecode;
+var Transaction, contractAddress;
 
-function putContract() {
-
-	Transaction.new({from: accounts[0], gas: 3000000, data: bytecode}, function(err, transaction) {
-        if (err) {
-            console.log("error");
-        }
-		transactionInstance = transaction;
-	});
-
-}
 
 function getBalance(address) {
     window.web3.eth.getBalance(address, function(err, balance){
@@ -23,47 +13,43 @@ function getBalance(address) {
 
 window.onload = function() {
 
-	if (typeof web3 !== 'undefined') {
-    console.warn("Using web3 detected from external source like Metamask")
-    // Use Mist/MetaMask's provider
-    window.web3 = new Web3(web3.currentProvider);
-    } else {
-    console.warn("No web3 detected. Falling back to http://localhost:8545. You should remove this fallback when you deploy live, as it's inherently insecure. Consider switching to Metamask for development. More info here: http://truffleframework.com/tutorials/truffle-and-metamask");
-    // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
-    window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-    }
-
+  window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+  
 	var self = this;
 
-    // Get the initial account balance so it can be displayed.
-    web3.eth.getAccounts(function(err, accs) {
-      if (err != null) {
-        alert("There was an error fetching your accounts.");
-        return;
-      }
+  // Get the initial account balance so it can be displayed.
+  web3.eth.getAccounts(function(err, accs) {
+    if (err != null) {
+      alert("There was an error fetching your accounts.");
+      return;
+    }
+    if (accs.length == 0) {
+      alert("Couldn't get any accounts! Make sure your Ethereum client is configured correctly.");
+      return;
+    }
+    accounts = accs;
+    account = accounts[0];
 
-      if (accs.length == 0) {
-        alert("Couldn't get any accounts! Make sure your Ethereum client is configured correctly.");
-        return;
-      }
-
-        accounts = accs;
-        account = accounts[0];
-
-        $.getJSON('Transaction.json', function(data) {
-            abi = data.abi;
-            bytecode = data.unlinked_binary;
-            Transaction = web3.eth.contract(abi);
-            // contractinstance  = Transaction.at("contractaddess");
-            putContract();
+    $.getJSON('Transaction.json', function(data) {
+        async: false,
+        abi = data.abi;
+        bytecode = data.unlinked_binary;
+        Transaction = web3.eth.contract(abi);
+        Transaction.new({from: accounts[0], gas: 3000000, data: bytecode}, function(err, transaction) {
+          if(err){
+            console.log("error");
+            return;
+          }
+          contractAddress = transaction.address;
         });
+        populateList();
     });
-    populateList();
+  });
 };
 
 function populateList() {
     var productList = '';
-    var url = '/products/sellerproductlist/fff';
+    var url = '/products/sellerproductlist/'+account;
     $.getJSON(url, function(data){
         currentData = data;
         $.each(data, function(){
@@ -139,19 +125,21 @@ function populateList() {
     });
     $('#productList').on('click', "div button.btn.btn-danger", deleteItem);
     $('#productForm').submit(submitProduct);
+
 }
 
 function deleteItem(event) {
     var id = $(this).attr('rel');
-    var sellerAddress = "fff";//TO DO: Replace it with actual seller address accounts[0]
+    var sellerAddress = account;//TO DO: Replace it with actual seller address accounts[0]
     var URL = '/products/deleteproduct/' + sellerAddress + '/' + id;
     $.ajax({
+        async: false,
         url: URL,
         type: 'DELETE',
         success: function(result) {
             console.log(result);
             alert("Product is deleted successfully.");
-            populateList();
+           populateList();
         }
     });
 }
@@ -164,8 +152,8 @@ function submitProduct(event) {
         price: document.getElementById("productPrice").value,
         image: document.getElementById("productImage").value,
         status: "Created",
-        sellerAddress: "fff",//TO DO: Replace it with actual seller address accounts[0]
-        contractAddress: ""//TO DO: Replace it with actual contract address after deploying contract
+        sellerAddress: accounts[0],//TO DO: Replace it with actual seller address accounts[0]
+        contractAddress: contractAddress//TO DO: Replace it with actual contract address after deploying contract
     }
     $.ajax({
         url: URL,
@@ -178,5 +166,5 @@ function submitProduct(event) {
         }
     });
 
-    return false;
+    //return false;
 }

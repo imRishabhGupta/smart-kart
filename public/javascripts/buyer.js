@@ -2,16 +2,22 @@ var accounts;
 var account;
 
 window.onload = function() {
-  if (typeof web3 !== 'undefined') {
-    console.warn("Using web3 detected from external source like Metamask")
-    // Use Mist/MetaMask's provider
-    window.web3 = new Web3(web3.currentProvider);
-  } else {
-    console.warn("No web3 detected. Falling back to http://localhost:8545. You should remove this fallback when you deploy live, as it's inherently insecure. Consider switching to Metamask for development. More info here: http://truffleframework.com/tutorials/truffle-and-metamask");
-    // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
-    window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-  }
-	var self = this;
+
+  $.ajaxSetup({
+      async: false
+  });
+ //  if (typeof web3 !== 'undefined') {
+ //    console.warn("Using web3 detected from external source like Metamask")
+ //    // Use Mist/MetaMask's provider
+ //    window.web3 = new Web3(web3.currentProvider);
+ //  } else {
+ //    console.warn("No web3 detected. Falling back to http://localhost:8545. You should remove this fallback when you deploy live, as it's inherently insecure. Consider switching to Metamask for development. More info here: http://truffleframework.com/tutorials/truffle-and-metamask");
+ //    // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
+ //    window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+ //  }
+ window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+ 
+	// var self = this;
     // Get the initial account balance so it can be displayed.
   web3.eth.getAccounts(function(err, accs) {
     if (err != null) {
@@ -119,7 +125,6 @@ function confirmPurchase(event) {
   var price;
   var URL = '/products/getproduct/'+$(this).attr('rel');
   var bAddress = accounts[2];
-  
   $.getJSON(URL, function(data){
     productData = data;
     cAddress = data.contractAddress;
@@ -128,12 +133,14 @@ function confirmPurchase(event) {
   // Contract Instannce from contract Address
   var abi, bytecode, Transaction;
   $.getJSON('Transaction.json', function(data) {
+    async: false,
     abi = data.abi;
     Transaction = web3.eth.contract(abi);
     contractInstance  = Transaction.at(cAddress);
   });
   // Make changes to contract by sending money to contract.  
   if(web3.eth.getBalance(bAddress) >= 2*price){
+    console.log(web3.eth.getBalance(cAddress).toLocaleString());
     contractInstance.confirmPurchase({from: bAddress, value:2*price}).then(
       function(){
         URL = '/products/updatestatus';
@@ -161,6 +168,7 @@ function confirmReceipt(event) {
   var bAddress = accounts[2];
   var cAddress, contractInstance;
   var URL = '/products/getproduct/'+$(this).attr('rel');
+
   $.getJSON(URL, function(data){
     cAddress = data.contractAddress;
   });

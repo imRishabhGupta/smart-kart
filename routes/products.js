@@ -36,6 +36,7 @@ router.get('/sellerproductlist/:sellerAddress', function(req, res) {
     var collection = db.get(dbName);
     var query = { sellerAddress: req.params.sellerAddress };
     collection.find(query, function(e,docs){
+        console.log(res.json(docs));
         res.json(docs);
     });
 });
