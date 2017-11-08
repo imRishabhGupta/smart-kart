@@ -4,15 +4,44 @@ var transactionInstance;
 var Transaction;
 var abi, bytecode;
 
-function putContract() {
+function submitProduct(event) {
+    var price = document.getElementById("productPrice").value;
+    // TO DO: price is to be converted in ether
 
-	Transaction.new({from: accounts[0], gas: 3000000, data: bytecode}, function(err, transaction) {
+	Transaction.new({from: accounts[0], gas: 3000000, data: bytecode, value: price}, function(err, transaction) {
         if (err) {
             console.log("error");
         }
 		transactionInstance = transaction;
-	});
+        if(transactionInstance.address !== undefined) {
 
+            console.log(transactionInstance.address);
+            console.log(accounts[0]);
+            var URL = "/products/addproduct";
+            var dataObject = {
+                name: document.getElementById("productName").value,
+                description: document.getElementById("productDescription").value,
+                price: document.getElementById("productPrice").value,
+                image: document.getElementById("productImage").value,
+                status: "Created",
+                sellerAddress: accounts[0],
+                contractAddress: transactionInstance.address
+            }
+            $.ajax({
+                url: URL,
+                type: 'POST',
+                data: JSON.stringify(dataObject),
+                contentType: 'application/json',
+                success: function(result) {
+                    alert("Product has been added successfully.");
+                    document.getElementById("productForm").reset();
+                    populateList();
+                    getBalance(transactionInstance.address);
+                }
+            });
+        }
+	});
+    return false;
 }
 
 function getBalance(address) {
@@ -24,13 +53,13 @@ function getBalance(address) {
 window.onload = function() {
 
 	if (typeof web3 !== 'undefined') {
-    console.warn("Using web3 detected from external source like Metamask")
-    // Use Mist/MetaMask's provider
-    window.web3 = new Web3(web3.currentProvider);
+        console.warn("Using web3 detected from external source like Metamask")
+        // Use Mist/MetaMask's provider
+        window.web3 = new Web3(web3.currentProvider);
     } else {
-    console.warn("No web3 detected. Falling back to http://localhost:8545. You should remove this fallback when you deploy live, as it's inherently insecure. Consider switching to Metamask for development. More info here: http://truffleframework.com/tutorials/truffle-and-metamask");
-    // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
-    window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+        console.warn("No web3 detected. Falling back to http://localhost:8545. You should remove this fallback when you deploy live, as it's inherently insecure. Consider switching to Metamask for development. More info here: http://truffleframework.com/tutorials/truffle-and-metamask");
+        // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
+        window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
     }
 
 	var self = this;
@@ -54,8 +83,6 @@ window.onload = function() {
             abi = data.abi;
             bytecode = data.unlinked_binary;
             Transaction = web3.eth.contract(abi);
-            // contractinstance  = Transaction.at("contractaddess");
-            putContract();
         });
     });
     populateList();
@@ -143,7 +170,7 @@ function populateList() {
 
 function deleteItem(event) {
     var id = $(this).attr('rel');
-    var sellerAddress = "fff";//TO DO: Replace it with actual seller address accounts[0]
+    var sellerAddress = accounts[0];
     var URL = '/products/deleteproduct/' + sellerAddress + '/' + id;
     $.ajax({
         url: URL,
@@ -154,29 +181,4 @@ function deleteItem(event) {
             populateList();
         }
     });
-}
-
-function submitProduct(event) {
-    var URL = "/products/addproduct"
-    var dataObject = {
-        name: document.getElementById("productName").value,
-        description: document.getElementById("productDescription").value,
-        price: document.getElementById("productPrice").value,
-        image: document.getElementById("productImage").value,
-        status: "Created",
-        sellerAddress: "fff",//TO DO: Replace it with actual seller address accounts[0]
-        contractAddress: ""//TO DO: Replace it with actual contract address after deploying contract
-    }
-    $.ajax({
-        url: URL,
-        type: 'POST',
-        data: JSON.stringify(dataObject),
-        contentType: 'application/json',
-        success: function(result) {
-            alert("Product has been added successfully.");
-            populateList();
-        }
-    });
-
-    return false;
 }
