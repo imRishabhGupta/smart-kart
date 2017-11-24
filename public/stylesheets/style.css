@@ -113,7 +113,7 @@ span.input-group-addon i {
 	text-align: center;
 }
 
-#eth-amount{
+.eth{
     font-size: 17px;
     margin-right: 10px;
 }

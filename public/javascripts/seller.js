@@ -50,6 +50,12 @@ function getBalance(address) {
     });
 }
 
+function updateBalance() {
+    window.web3.eth.getBalance(account, function(err, balance){
+        $("#eth-balance").html(parseFloat(window.web3.fromWei(balance, 'ether')));
+    });
+}
+
 window.onload = function() {
 
 	if (typeof web3 !== 'undefined') {
@@ -84,15 +90,20 @@ window.onload = function() {
             bytecode = data.unlinked_binary;
             Transaction = web3.eth.contract(abi);
         });
+        populateList();
     });
-    populateList();
 };
 
 function populateList() {
     var productList = '';
-    var url = '/products/sellerproductlist/fff';
+    var url = '/products/sellerproductlist/' + account;
     $.getJSON(url, function(data){
         currentData = data;
+
+        if(currentData.length === 0){
+            productList = '<div class="eth container">Sorry, you don\'t have any products deployed. Go ahead deploy your first product!</div>';
+        }
+
         $.each(data, function(){
 
             productList += '<div class="panel panel-primary">';

@@ -25,12 +25,19 @@ window.onload = function() {
 
     accounts = accs;
     account = accounts[0];
+    updateBalance();
 
   });
 
   populateList();
   
 };
+
+function updateBalance() {
+    window.web3.eth.getBalance(account, function(err, balance){
+        $("#eth-balance").html(parseFloat(window.web3.fromWei(balance, 'ether')));
+    });
+}
 
 function populateList() {
   var productList = '';
@@ -109,6 +116,10 @@ function populateList() {
   $('#productList').on('click', "div button.btn.btn-default", confirmPurchase);
   $('#productList').on('click', "div button.btn.btn-danger", refundItem);
   $('#productList').on('click', "div button.btn.btn-success", confirmReceipt);
+
+  if(account){
+    updateBalance();
+  }
 }
 
 function confirmPurchase(event) {
