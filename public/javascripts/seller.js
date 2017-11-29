@@ -84,6 +84,7 @@ window.onload = function() {
 
         accounts = accs;
         account = accounts[0];
+        updateBalance();
 
         $.getJSON('Transaction.json', function(data) {
             abi = data.abi;
@@ -177,6 +178,9 @@ function populateList() {
     });
     $('#productList').on('click', "div button.btn.btn-danger", deleteItem);
     $('#productForm').submit(submitProduct);
+    if(account){
+        updateBalance();
+    }
 }
 
 function deleteItem(event) {

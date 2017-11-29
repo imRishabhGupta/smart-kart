@@ -24,7 +24,7 @@ window.onload = function() {
     }
 
     accounts = accs;
-    account = accounts[0];
+    account = accounts[2];
     updateBalance();
 
   });
