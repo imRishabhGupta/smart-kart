@@ -6,7 +6,6 @@ var abi, bytecode;
 
 function submitProduct(event) {
     var price = document.getElementById("productPrice").value;
-    // TO DO: price is to be converted in ether
 
 	Transaction.new({from: accounts[0], gas: 3000000, data: bytecode, value: price}, function(err, transaction) {
         if (err) {

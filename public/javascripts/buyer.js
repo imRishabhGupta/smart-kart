@@ -1,5 +1,6 @@
 var accounts;
 var account;
+var balance;
 
 window.onload = function() {
   if (typeof web3 !== 'undefined') {
@@ -36,6 +37,13 @@ window.onload = function() {
 function updateBalance() {
     window.web3.eth.getBalance(account, function(err, balance){
         $("#eth-balance").html(parseFloat(window.web3.fromWei(balance, 'ether')));
+    });
+}
+
+function getBalance(address) {
+    window.web3.eth.getBalance(address, function(err, balance){
+      balance=parseFloat(window.web3.fromWei(balance, 'ether'));
+        console.log(parseFloat(window.web3.fromWei(balance, 'ether')));
     });
 }
 
@@ -124,6 +132,8 @@ function populateList() {
 
 function confirmPurchase(event) {
 
+  var button = this;
+
   var productData;
   var contractInstance;
   var cAddress;
@@ -135,93 +145,103 @@ function confirmPurchase(event) {
     productData = data;
     cAddress = data.contractAddress;
     price = data.price;
+
+    var abi, bytecode, Transaction;
+    $.getJSON('Transaction.json', function(data) {
+      abi = data.abi;
+      Transaction = web3.eth.contract(abi);
+      contractInstance  = Transaction.at(cAddress);
+
+      window.web3.eth.getBalance(bAddress, function(err, balance){
+        balance=parseFloat(window.web3.fromWei(balance, 'ether'));
+        balance = balance*(1e18);
+        
+        if(balance >= 2*price){
+          contractInstance.confirmPurchase({from: bAddress, value:2*price}, function(){
+            URL = '/products/updatestatus';
+
+            var dataObject = {_id:$(button).attr('rel'), status:'Confirmed', buyerAdress: bAddress}; //TO DO: Change to Confirmed
+            $.ajax({
+              url: URL,
+              type: 'PUT',
+              data: JSON.stringify(dataObject),
+              contentType: 'application/json',
+              success: function(result) {
+                alert("Product bought successfully.");
+                populateList();
+              }
+            });
+            alert("Purchase Confirmed");
+          });
+        }
+        else{
+          alert("You don't have enough balance!");
+          return;
+        }
+      });
+    });
   });
-  // Contract Instannce from contract Address
-  var abi, bytecode, Transaction;
-  $.getJSON('Transaction.json', function(data) {
-    abi = data.abi;
-    Transaction = web3.eth.contract(abi);
-    contractInstance  = Transaction.at(cAddress);
-  });
-  // Make changes to contract by sending money to contract.  
-  if(web3.eth.getBalance(bAddress) >= 2*price){
-    contractInstance.confirmPurchase({from: bAddress, value:2*price}).then(
-      function(){
+  
+}
+
+function confirmReceipt(event) {
+  var button = this;
+  var bAddress = accounts[2];
+  var cAddress, contractInstance;
+  var URL = '/products/getproduct/'+$(button).attr('rel');
+  $.getJSON(URL, function(data){
+    cAddress = data.contractAddress;
+    var abi, bytecode, Transaction;
+    $.getJSON('Transaction.json', function(data) {
+      abi = data.abi;
+      Transaction = web3.eth.contract(abi);
+      contractInstance  = Transaction.at(cAddress);
+      contractInstance.confirmReceived({from: bAddress}, function(){
         URL = '/products/updatestatus';
-        var dataObject = {_id:$(this).attr('rel'), status:'Confirmed', buyerAdress: bAdress}; //TO DO: Change to Confirmed
+        var dataObject = {_id:$(button).attr('rel'), status:'Disabled'};
         $.ajax({
           url: URL,
           type: 'PUT',
           data: JSON.stringify(dataObject),
           contentType: 'application/json',
           success: function(result) {
-              alert("Product bought successfully.");
-              populateList();
+            alert("Product's receipt is confirmed.");
+            populateList();
           }
         });
-        alert("Purchase Confirmed");
       });
-  }
-  else{
-    alert("You don't have enough balance!");
-    return;
-  }
-}
-
-function confirmReceipt(event) {
-  var bAddress = accounts[2];
-  var cAddress, contractInstance;
-  var URL = '/products/getproduct/'+$(this).attr('rel');
-  $.getJSON(URL, function(data){
-    cAddress = data.contractAddress;
-  });
-  var abi, bytecode, Transaction;
-  $.getJSON('Transaction.json', function(data) {
-    abi = data.abi;
-    Transaction = web3.eth.contract(abi);
-    contractInstance  = Transaction.at(cAddress);
-  });
-  contractInstance.confirmReceived({from: bAdress}).then(function(){
-    URL = '/products/updatestatus';
-    var dataObject = {_id:$(this).attr('rel'), status:'Disabled'};
-    $.ajax({
-      url: URL,
-      type: 'PUT',
-      data: JSON.stringify(dataObject),
-      contentType: 'application/json',
-      success: function(result) {
-          alert("Product's receipt is confirmed.");
-          populateList();
-      }
     });
   });
 }
 
 function refundItem(event) {
-  var bAdress = accounts[2];
+
+  var button = this;
+  var bAddress = accounts[2];
   var cAddress, contractInstance;
-  var URL = '/products/getproduct/'+$(this).attr('rel');
+  var URL = '/products/getproduct/'+$(button).attr('rel');
+
   $.getJSON(URL, function(data){
     cAddress = data.contractAddress;
-  });
-  var abi, bytecode, Transaction;
-  $.getJSON('Transaction.json', function(data) {
-    abi = data.abi;
-    Transaction = web3.eth.contract(abi);
-    contractInstance  = Transaction.at(cAddress);
-  });
-  contractInstance.refundBuyer({from: bAddress}).then(function(data){
-    URL = '/products/updatestatus';
-    var dataObject = {_id:$(this).attr('rel'), status:'Disabled'};
-    $.ajax({
-      url: URL,
-      type: 'PUT',
-      data: JSON.stringify(dataObject),
-      contentType: 'application/json',
-      success: function(result) {
-          alert("Request to return product is sent.");
-          populateList();
-      }
+    var abi, bytecode, Transaction;
+    $.getJSON('Transaction.json', function(data) {
+      abi = data.abi;
+      Transaction = web3.eth.contract(abi);
+      contractInstance  = Transaction.at(cAddress);
+      contractInstance.refundBuyer({from: bAddress}, function(data){
+        URL = '/products/updatestatus';
+        var dataObject = {_id:$(button).attr('rel'), status:'Disabled'};
+        $.ajax({
+          url: URL,
+          type: 'PUT',
+          data: JSON.stringify(dataObject),
+          contentType: 'application/json',
+          success: function(result) {
+            alert("Request to return product is sent.");
+            populateList();
+          }
+        });
+      });
     });
   });
 }

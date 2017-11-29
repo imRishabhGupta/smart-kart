@@ -11,6 +11,10 @@ router.get('/productlist', function(req, res) {
     var db = req.db;
     var collection = db.get(dbName);
     collection.find({},{},function(e,docs){
+        if(docs == null){
+            res.send({ msg: 'List is empty.' });
+            return;
+        }
         res.json(docs);
     });
 });
@@ -24,6 +28,10 @@ router.get('/getproduct/:id', function(req, res) {
     var ObjectID = req.ObjectID;
     var query = { _id: new ObjectID(req.params.id) };
     collection.findOne(query, function(e,docs){
+        if(docs == null){
+            res.send({ msg: 'Product not found.' });
+            return;
+        }
         res.json(docs);
     });
 });
@@ -36,6 +44,10 @@ router.get('/sellerproductlist/:sellerAddress', function(req, res) {
     var collection = db.get(dbName);
     var query = { sellerAddress: req.params.sellerAddress };
     collection.find(query, function(e,docs){
+        if(docs == null){
+            res.send({ msg: 'List is empty.' });
+            return;
+        }
         res.json(docs);
     });
 });
@@ -66,7 +78,8 @@ router.put('/updatestatus', function(req, res) {
     var collection = db.get(dbName);
     var query = { _id: new ObjectID(req.body._id) };
     var newvalues;
-    if(req.body.status == "Confirmed")
+    console.log(req.body);
+    if(req.body.status == "Created")
         newvalues= { $set: { status: req.body.status, buyerAddress: req.body.buyerAddress } };
     else
         newvalues = { $set: { status: req.body.status } };
@@ -84,12 +97,25 @@ router.delete('/deleteproduct/:sellerAddress/:id', function(req, res) {
     var db = req.db;
     var collection = db.get(dbName);
     var ObjectID = req.ObjectID;
-    var query = { 
-        _id: new ObjectID(req.params.id), 
-        sellerAddress: req.params.sellerAddress
-    };
-    collection.remove(query, function(err) {
-        res.send((err === null) ? { msg: 'Product deleted successfully.' } : { msg:'error: ' + err });
+    var ObjectID = req.ObjectID;
+    var query = { _id: new ObjectID(req.params.id) };
+    collection.findOne(query, function(e,docs){
+        if(docs == null){
+            res.send({ msg: 'Product not found.' });
+            return;
+        }
+        if(docs.status != "Created"){
+            console.log("here");
+            res.send({ msg: 'Product cannot be deleted.' });
+            return;
+        }
+        query = { 
+            _id: new ObjectID(req.params.id), 
+            sellerAddress: req.params.sellerAddress
+        };
+        collection.remove(query, function(err) {
+            res.send((err === null) ? { msg: 'Product deleted successfully.' } : { msg:'error: ' + err });
+        });
     });
 });
 
