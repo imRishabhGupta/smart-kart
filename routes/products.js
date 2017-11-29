@@ -73,14 +73,18 @@ router.post('/addproduct', function(req, res) {
  * PUT to updatestatus.
  */
 router.put('/updatestatus', function(req, res) {
+    console.log(req);
     var db = req.db;
     var ObjectID = req.ObjectID;
     var collection = db.get(dbName);
     var query = { _id: new ObjectID(req.body._id) };
     var newvalues;
     console.log(req.body);
-    if(req.body.status == "Created")
-        newvalues= { $set: { status: req.body.status, buyerAddress: req.body.buyerAddress } };
+    if(req.body.status == "Refund"){
+        newvalues = { $set: { status: req.body.status } };
+    }
+    else if(req.body.status == "Created")
+        newvalues= { $set: { status: req.body.status, buyerAddress: req.body.buyerAddress} };
     else
         newvalues = { $set: { status: req.body.status } };
     collection.update(query, newvalues, function(err, result) {

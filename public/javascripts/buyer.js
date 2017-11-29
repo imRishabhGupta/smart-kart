@@ -3,6 +3,7 @@ var account;
 var balance;
 
 window.onload = function() {
+  console.log("dsa");
   if (typeof web3 !== 'undefined') {
     console.warn("Using web3 detected from external source like Metamask")
     // Use Mist/MetaMask's provider
@@ -43,7 +44,7 @@ function updateBalance() {
 function getBalance(address) {
     window.web3.eth.getBalance(address, function(err, balance){
       balance=parseFloat(window.web3.fromWei(balance, 'ether'));
-        console.log(parseFloat(window.web3.fromWei(balance, 'ether')));
+      console.log(parseFloat(window.web3.fromWei(balance, 'ether')));
     });
 }
 
@@ -81,6 +82,7 @@ function populateList() {
                 productList += '<span>';
 
                 var buttonString;
+                console.log(this.status);
                 if(this.status == 'Confirmed'){
                   productList += '<button type="button" class="btn btn-success btn-lg" rel="'+this._id+'"';
                   buttonString = 'Keep Item';
@@ -92,6 +94,11 @@ function populateList() {
                 else if(this.status == 'Disabled'){
                   productList += '<button type="button" class="btn btn-default btn-lg" rel="'+this._id+'"';
                   buttonString = 'Sold Out';
+                  productList += ' disabled';
+                }
+                else if(this.status == 'Refund'){
+                  productList += '<button type="button" class="btn btn-default btn-lg" rel="'+this._id+'"';
+                  buttonString = 'Awaiting refund for this item';
                   productList += ' disabled';
                 }
                 else{
@@ -133,7 +140,6 @@ function populateList() {
 function confirmPurchase(event) {
 
   var button = this;
-
   var productData;
   var contractInstance;
   var cAddress;
@@ -185,6 +191,7 @@ function confirmPurchase(event) {
 }
 
 function confirmReceipt(event) {
+  console.log("confirmReceipt");
   var button = this;
   var bAddress = accounts[2];
   var cAddress, contractInstance;
@@ -220,17 +227,18 @@ function refundItem(event) {
   var bAddress = accounts[2];
   var cAddress, contractInstance;
   var URL = '/products/getproduct/'+$(button).attr('rel');
-
+  console.log("Refund Item");
+  
   $.getJSON(URL, function(data){
     cAddress = data.contractAddress;
     var abi, bytecode, Transaction;
     $.getJSON('Transaction.json', function(data) {
-      abi = data.abi;
-      Transaction = web3.eth.contract(abi);
-      contractInstance  = Transaction.at(cAddress);
-      contractInstance.refundBuyer({from: bAddress}, function(data){
+        abi = data.abi;
+        Transaction = web3.eth.contract(abi);
+        contractInstance  = Transaction.at(cAddress);
+        contractInstance.refundRequest({from: bAddress}, function(data){
         URL = '/products/updatestatus';
-        var dataObject = {_id:$(button).attr('rel'), status:'Disabled'};
+        var dataObject = {_id:$(button).attr('rel'), status: "Refund"};
         $.ajax({
           url: URL,
           type: 'PUT',
