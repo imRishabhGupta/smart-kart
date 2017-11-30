@@ -6,13 +6,12 @@ var abi, bytecode;
 
 function submitProduct(event) {
     var price = document.getElementById("productPrice").value;
-
 	Transaction.new({from: accounts[0], gas: 3000000, data: bytecode, value: price}, function(err, transaction) {
         if (err) {
-            console.log("error");
+            console.log(err);
         }
 		transactionInstance = transaction;
-        if(transactionInstance.address !== undefined) {
+        if(transaction !== undefined && transactionInstance.address !== undefined) {
 
             console.log(transactionInstance.address);
             console.log(accounts[0]);
@@ -24,7 +23,7 @@ function submitProduct(event) {
                 image: document.getElementById("productImage").value,
                 status: "Created",
                 sellerAddress: accounts[0],
-                contractAddress: transactionInstance.address
+                contractAddress: transactionInstance.address,
             }
             $.ajax({
                 url: URL,
@@ -90,6 +89,7 @@ window.onload = function() {
             bytecode = data.unlinked_binary;
             Transaction = web3.eth.contract(abi);
         });
+        //console.log(Transaction);
         populateList();
     });
 };
@@ -133,6 +133,7 @@ function populateList() {
             productList += '<span>';
 
             var buttonString;
+            console.log(this.status);
             if(this.status == 'Confirmed'){
                 productList += '<button type="button" class="btn btn-info btn-lg" rel="'+this._id+'"';
                 buttonString = 'Product bought';
@@ -142,6 +143,10 @@ function populateList() {
                 productList += '<button type="button" class="btn btn-default btn-lg" rel="'+this._id+'"';
                 buttonString = 'Product on Sale';
                 productList += ' disabled';
+            }
+            else if(this.status == 'Refund'){
+                productList += '<button type="button" class="btn btn-primary btn-lg" rel="'+this._id+'"';
+                buttonString = 'Refund User';
             }
             else if(this.status == 'Disabled'){
                 productList += '<button type="button" class="btn btn-success btn-lg" rel="'+this._id+'"';
@@ -176,6 +181,7 @@ function populateList() {
         $('#productList').html(productList);
     });
     $('#productList').on('click', "div button.btn.btn-danger", deleteItem);
+    $('#productList').on('click', "div button.btn.btn-primary", refundItem);
     $('#productForm').submit(submitProduct);
     if(account){
         updateBalance();
@@ -194,5 +200,36 @@ function deleteItem(event) {
             alert("Product is deleted successfully.");
             populateList();
         }
+    });
+}
+
+function refundItem(event) {
+  var button = this;
+  var sAddress = accounts[0];
+  var cAddress, contractInstance;
+  var URL = '/products/getproduct/'+$(button).attr('rel');
+
+    $.getJSON(URL, function(data){
+        cAddress = data.contractAddress;
+        var abi, bytecode, Transaction;
+        $.getJSON('Transaction.json', function(data) {
+          abi = data.abi;
+          Transaction = web3.eth.contract(abi);
+          contractInstance  = Transaction.at(cAddress);
+          contractInstance.refundBuyer({from: sAddress}, function(data){
+            URL = '/products/updatestatus';
+            var dataObject = {_id:$(button).attr('rel'), status:'Disabled'};
+            $.ajax({
+              url: URL,
+              type: 'PUT',
+              data: JSON.stringify(dataObject),
+              contentType: 'application/json',
+              success: function(result) {
+                alert("Product Returned.");
+                populateList();
+              }
+            });
+          });
+        });
     });
 }
