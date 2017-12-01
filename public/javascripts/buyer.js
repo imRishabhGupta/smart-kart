@@ -70,13 +70,24 @@ function populateList() {
                 productList += '<p><strong>Seller Address: </strong>'+this.sellerAddress+'</p>';
                 productList += '</span>';
           
+                var one_day=1000*60*60*24;
+                var deployDate = new Date(this.date);
+                var currentDate = new Date();
+                var difference_ms = currentDate.getTime() - deployDate.getTime();
+                var days = Math.round(difference_ms/one_day); 
+                days = 15 - days;
+                console.log(days);
+                productList += '<span class="auto-kill">';
+                productList += '<p><strong>The contract will be killed in </strong>'+days+' days</p>';
+                productList += '</span>';
+
                 productList += '<span class="contract-address">';
                 productList += '<p><strong>Contract Address: </strong>'+this.contractAddress+'</p>';
                 productList += '</span>';
       
                 productList += '<span class="item-description">';
                 productList += '<p><strong>Description:</strong>'+this.description+'</p>';
-                productList += '<p><strong>Price:</strong>'+this.price+'</p>';
+                productList += '<p><strong>Price:</strong>'+(this.price)/(1e18)+'</p>';
                 productList += '</span>';
 
                 productList += '<span>';
@@ -232,24 +243,17 @@ function refundItem(event) {
   $.getJSON(URL, function(data){
     cAddress = data.contractAddress;
     var abi, bytecode, Transaction;
-    $.getJSON('Transaction.json', function(data) {
-        abi = data.abi;
-        Transaction = web3.eth.contract(abi);
-        contractInstance  = Transaction.at(cAddress);
-        contractInstance.refundRequest({from: bAddress}, function(data){
-        URL = '/products/updatestatus';
-        var dataObject = {_id:$(button).attr('rel'), status: "Refund"};
-        $.ajax({
-          url: URL,
-          type: 'PUT',
-          data: JSON.stringify(dataObject),
-          contentType: 'application/json',
-          success: function(result) {
-            alert("Request to return product is sent.");
-            populateList();
-          }
-        });
-      });
-    });
+      URL = '/products/updatestatus';
+      var dataObject = {_id:$(button).attr('rel'), status: "Refund"};
+      $.ajax({
+        url: URL,
+        type: 'PUT',
+        data: JSON.stringify(dataObject),
+        contentType: 'application/json',
+        success: function(result) {
+          alert("Request to return product is sent.");
+          populateList();
+        }
+    }); 
   });
 }

@@ -12,14 +12,6 @@
     {
       "constant": false,
       "inputs": [],
-      "name": "refundRequest",
-      "outputs": [],
-      "payable": false,
-      "type": "function"
-    },
-    {
-      "constant": false,
-      "inputs": [],
       "name": "confirmReceived",
       "outputs": [],
       "payable": false,

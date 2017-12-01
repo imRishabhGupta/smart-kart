@@ -6,12 +6,14 @@ var abi, bytecode;
 
 function submitProduct(event) {
     var price = document.getElementById("productPrice").value;
+    price = price*(1e18);
+    console.log(price);
 	Transaction.new({from: accounts[0], gas: 3000000, data: bytecode, value: price}, function(err, transaction) {
         if (err) {
             console.log(err);
         }
 		transactionInstance = transaction;
-        if(transaction !== undefined && transactionInstance.address !== undefined) {
+        if(transaction !== undefined || transactionInstance.address !== undefined) {
 
             console.log(transactionInstance.address);
             console.log(accounts[0]);
@@ -19,11 +21,12 @@ function submitProduct(event) {
             var dataObject = {
                 name: document.getElementById("productName").value,
                 description: document.getElementById("productDescription").value,
-                price: document.getElementById("productPrice").value,
+                price: price,
                 image: document.getElementById("productImage").value,
                 status: "Created",
                 sellerAddress: accounts[0],
                 contractAddress: transactionInstance.address,
+                date: new Date(),
             }
             $.ajax({
                 url: URL,
@@ -108,7 +111,7 @@ function populateList() {
 
             productList += '<div class="panel panel-primary">';
             productList += '<div class="panel-heading">';
-            productList += '<h3 class="panel-title"><strong>'+this.name+'</strong></h3>';
+            productList += '<h3 class="panel-title"><strong> '+this.name+'</strong></h3>';
             productList += '</div>';
 
             productList += '<div class="panel-body">';
@@ -116,18 +119,29 @@ function populateList() {
             productList += '<span class="item-img">';
             productList += '<img src="'+this.image+'">';
             productList += '</span>';
-          
+
             productList += '<span class="seller-address">';
-            productList += '<p><strong>Seller Address: </strong>'+this.sellerAddress+'</p>';
+            productList += '<p><strong>Seller Address: </strong> '+this.sellerAddress+'</p>';
+            productList += '</span>';
+
+            var one_day=1000*60*60*24;
+            var deployDate = new Date(this.date);
+            var currentDate = new Date();
+            var difference_ms = currentDate.getTime() - deployDate.getTime();
+            var days = Math.round(difference_ms/one_day); 
+            days = 15 - days;
+            console.log(days);
+            productList += '<span class="auto-kill">';
+            productList += '<p><strong>The contract can be killed after </strong>'+days+' days</p>';
             productList += '</span>';
           
             productList += '<span class="contract-address">';
-            productList += '<p><strong>Contract Address: </strong>'+this.contractAddress+'</p>';
+            productList += '<p><strong>Contract Address: </strong> '+this.contractAddress+'</p>';
             productList += '</span>';
       
             productList += '<span class="item-description">';
-            productList += '<p><strong>Description:</strong>'+this.description+'</p>';
-            productList += '<p><strong>Price:</strong>'+this.price+'</p>';
+            productList += '<p><strong>Description:</strong> '+this.description+'</p>';
+            productList += '<p><strong>Price:</strong> '+(this.price)/(1e18)+'</p>';
             productList += '</span>';
 
             productList += '<span>';
